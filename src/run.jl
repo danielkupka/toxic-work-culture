@@ -25,15 +25,17 @@ function monte_carlo(number_of_runs::Int, number_of_epochs::Int; kwargs...)
     end
 
     # Compute the values.
-    step  = first(results).step
-    total = round.(Int, mapreduce(x -> x.total, +, results) ./ number_of_runs)
-    left  = round.(Int, mapreduce(x -> x.left,  +, results) ./ number_of_runs)
+    step  = vcat(map(x -> x.step,  results)...)
+    total = vcat(map(x -> x.total, results)...)
+    left  = vcat(map(x -> x.left,  results)...)
+    run   = vcat([ones(Int, length(results[k].step)) * k for k in 1:number_of_runs]...)
 
     # Compute the DataFrame with the result.
     df = DataFrame(
         step  = step,
         total = total,
         left  = left,
+        run   = run,
     )
 
     return df
